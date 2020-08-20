@@ -44,12 +44,6 @@ export ALFMMTJAR=https://downloads.loftux.net/public/content/org/alfresco/alfres
 
 export ASS_DOWNLOAD=https://downloads.loftux.net/public/content/org/alfresco/alfresco-search-services/1.3.0.1/alfresco-search-services-1.3.0.1.zip
 
-export LXALFREPOWAR=https://downloads.loftux.net/alfresco/alfresco-platform/LX101/alfresco-platform-LX101.war
-export LXALFSHAREWAR=https://downloads.loftux.net/alfresco/share/LX101/share-LX101.war
-export LXALFSHARESERVICES=https://downloads.loftux.net/alfresco/alfresco-share-services/LX101/alfresco-share-services-LX101.amp
-export LXAOS_AMP=https://downloads.loftux.net/alfresco/aos-module/alfresco-aos-module/1.2.0.1/alfresco-aos-module-1.2.0.1.amp
-
-
 export GOOGLEDOCSREPO=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-repo/3.0.4.3/alfresco-googledocs-repo-3.0.4.3.amp
 export GOOGLEDOCSSHARE=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-share/3.0.4.3/alfresco-googledocs-share-3.0.4.3.amp
 
@@ -94,37 +88,23 @@ cd ./alfrescoinstall
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echogreen "Alfresco Ubuntu installer by Loftux AB."
+echogreen "Alfresco Centos installer by Evoltia."
 echogreen "Please read the documentation at"
-echogreen "https://github.com/loftuxab/alfresco-ubuntu-install."
+echogreen "https://github.com/evoltia/evoltia-alfresco-install"
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo
 
 echo
 echo "${warn}${bldblu} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${warn}"
-echogreen "Do you want to install LXCommunity ECM build of Alfresco Community"
-echogreen "from Loftux AB?"
+echogreen "Do you want to install Alfresco Community"
 echogreen "You can use this in place of Alfresco Community from Alfresco Software"
-echogreen "and optionally later buy a support package."
-echogreen "If you later prefer to use Alfresco Community you can always switch back"
 echogreen "by manually replacing war files."
 echo
-echogreen "Please visit https://loftux.com/alfresco for more information."
-echogreen "You are welcome to contact us at info@loftux.se"
+echogreen "You are welcome to contact us at jmanzano@evoltia.com"
 echo "${warn}${bldblu} - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - ${warn}"
 echo
-read -e -p "Use LXCommunity ECM when installing${ques} [y/n] " -i "$DEFAULTYESNO" uselxcommunity
-if [ "$uselxcommunity" = "y" ]; then
-
-  ALFREPOWAR=$LXALFREPOWAR
-  ALFSHAREWAR=$LXALFSHAREWAR
-  ALFSHARESERVICES=$LXALFSHARESERVICES
-  AOS_AMP=$LXAOS_AMP
-
-  echo
-  echogreen "Thanks for choosing LXCommunity ECM"
-  echo
-else
+read -e -p "Install Alfresco ECM when installing${ques} [y/n] " -i "$DEFAULTYESNO" installAlfrescoEcm
+if [ "$installAlfrescoEcm" = "y" ]; then
   echo "Installing Alfresco Community edition from Alfresco Software"
   echo
 fi
@@ -227,7 +207,7 @@ echo "international characters."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Enter the default locale to use: " -i "$LOCALESUPPORT" LOCALESUPPORT
 #install locale to support that locale date formats in open office transformations
-#sudo locale-gen $LOCALESUPPORT
+sudo yum $APTVERBOSITY install glibc-locale-source
 sudo localedef -v -c -i $LOCALE -f $ENCODING $LOCALESUPPORT
 echo
 echogreen "Finished updating locale"
@@ -235,7 +215,7 @@ echo
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Ubuntu default for number of allowed open files in the file system is too low"
+echo "Centos default for number of allowed open files in the file system is too low"
 echo "for alfresco use and tomcat may because of this stop with the error"
 echo "\"too many open files\". You should update this value if you have not done so."
 echo "Read more at http://wiki.alfresco.com/wiki/Too_many_open_files"
@@ -419,7 +399,7 @@ echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 read -e -p "Install OpenJDK${ques} [y/n] " -i "$DEFAULTYESNO" installjdk
 if [ "$installjdk" = "y" ]; then
   echoblue "Installing OpenJDK..."
-  sudo yum $APTVERBOSITY install openjdk-8-jre-headless
+  sudo yum $APTVERBOSITY install java-1.8.0-openjdk
   echo
   echogreen "Make sure correct default java is selected!"
   echo
@@ -484,20 +464,11 @@ read -e -p "Install ImageMagick${ques} [y/n] " -i "$DEFAULTYESNO" installimagema
 if [ "$installimagemagick" = "y" ]; then
 
   echoblue "Installing ImageMagick. Fetching packages..."
-  sudo yum $APTVERBOSITY install imagemagick ghostscript libgs-dev libjpeg62 libpng16-16
-  echo
-  if [ "$ISON1604" = "y" ]; then
-    echoblue "Creating symbolic link for ImageMagick-6."
-    sudo ln -s /etc/ImageMagick-6 /etc/ImageMagick
-  fi
-  echo
-  echogreen "Finished installing ImageMagick"
-  echo
-else
-  echo
-  echo "Skipping install of ImageMagick"
-  echored "Remember to install ImageMagick later. It is needed for thumbnail transformations."
-  echo
+  #sudo yum $APTVERBOSITY install imagemagick ghostscript libgs-dev libjpeg62 libpng16-16
+  sudo dnf $APTVERBOSITY install epel-release
+  sudo dnf config-manager --set-enabled PowerTools
+  sudo dnf update
+  sudo dnf $APTVERBOSITY install ImageMagick ImageMagick-devel
 fi
 
 echo
