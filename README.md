@@ -1,15 +1,13 @@
-[![Loftux AB](https://loftux.com/files/static/images/ubuntu_installer.png?ref=ubuntuinstall)](https://loftux.com?ref=ubuntuinstall)
-
-Alfresco Ubuntu Installer
+Alfresco Centos Installer
 =======================
 
-This install script and guide was created by Peter Löfgren, [Loftux AB](http://loftux.com).  
+This install is based on script and guide was created by Peter Löfgren, [Loftux AB](http://loftux.com).  
 
 Please visit [https://loftux.com](https://loftux.com/en/?ref=ubuntuinstall "loftux.com") (English) [https://loftux.se](https://loftux.se/sv?ref=ubuntuinstall "loftux.se") (Swedish)  for more information.
 
 
 Current version : **Alfresco Community 6.1 (6.1.1 Repository,6.1.0 Share)** or **LXCommunity ECM LX101**  
-Ubuntu Version : **16.04** or later.
+Centos Version : **7** or later.
 
 Alfresco script based install for Ubuntu servers.
 ----------------------------
