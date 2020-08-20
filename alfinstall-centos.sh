@@ -19,7 +19,7 @@ export GIT_PASSWORD="pistacho1650"
 
 # Branch name to pull from server. Use master for stable.
 BRANCH=develop
-export BASE_DOWNLOAD=https://nachomanzano@git.evoltia.com/scm/git/evoltia-alfresco-install/$BRANCH
+export BASE_DOWNLOAD=https://raw.githubusercontent.com/evoltia/evoltia-alfresco-install/$BRANCH
 export KEYSTOREBASE=https://svn.alfresco.com/repos/alfresco-open-mirror/alfresco/HEAD/root/projects/repository/config/alfresco/keystore
 
 #Change this to prefered locale to make sure it exists. This has impact on LibreOffice transformations

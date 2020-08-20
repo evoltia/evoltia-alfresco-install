@@ -9,18 +9,14 @@ Please visit [https://loftux.com](https://loftux.com/en/?ref=ubuntuinstall "loft
 Current version : **Alfresco Community 6.1 (6.1.1 Repository,6.1.0 Share)** or **LXCommunity ECM LX101**  
 Centos Version : **7** or later.
 
-Alfresco script based install for Ubuntu servers.
+Alfresco script based install for Centos.
 ----------------------------
 
-This script will help you set up an Alfresco server instance with all necessary third party components.  Some will be installed via Ubuntu packages, some directly downloaded. The script will walk you through the process. In the end, there will be some manual tasks to complete the installation.
+This script will help you set up an Alfresco server instance with all necessary third party components.  Some will be installed via Centos rpm, some directly downloaded. The script will walk you through the process. In the end, there will be some manual tasks to complete the installation.
 
 Alfresco does have installers for Linux, and you may be better off with using those installers if you just want to do a quick test install.
 
 If you intend to run Alfresco in production, this script can help you both with the install. *By examining what the script does, you can also learn what components are involved running an Alfresco instance.* This is a must for any Alfresco administrator who runs Alfresco in production.  
-
-For commercial support with your installation, upgrades and running a production server, contact [Loftux AB](https://loftux.com/contact) (Worldwide).
-
-
 
 Installing
 ----
