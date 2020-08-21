@@ -290,7 +290,7 @@ if [ "$installtomcat" = "y" ]; then
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
   read -e -p "Please enter the public host name for Share server (fully qualified domain name)${ques} [`hostname`] " -i "`hostname`" SHARE_HOSTNAME
   read -e -p "Please enter the protocol to use for public Share server (http or https)${ques} [http] " -i "http" SHARE_PROTOCOL
-  SHARE_PORT=80
+  SHARE_PORT=8080
   if [ "${SHARE_PROTOCOL,,}" = "https" ]; then
     SHARE_PORT=443
   fi
