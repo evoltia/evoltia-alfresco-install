@@ -38,22 +38,13 @@ export LIBREOFFICE=http://download.documentfoundation.org/libreoffice/stable/6.4
 
 ## https://www.alfresco.com/es/thank-you/thank-you-downloading-alfresco-community-edition
 export ALFRESCO_DISTRIBUTION_DOWNLOAD_URL=https://download.alfresco.com/cloudfront/release/community/201911-GA-build-368/alfresco-content-services-community-distribution-6.2.0-ga.zip
-export ALFRESCO_DISTRIBUTION=$BASE_DOWNLOAD/alfresco-content-services-community-distribution-6.2.0-ga
-
-export ALFREPOWAR=$ALFRESCO_DISTRIBUTION/web-server/webapps/alfresco.war
-export ALFSHAREWAR=$ALFRESCO_DISTRIBUTION/web-server/webapps/share.war
-export ALFSHARESERVICES=$ALFRESCO_DISTRIBUTION/amps/alfresco-share-services.amp
-export ALFMMTJAR=$ALFRESCO_DISTRIBUTION/bin/alfresco-mmt.jar
-export ALFRESCO_PDF_RENDERER=$ALFRESCO_DISTRIBUTION/alfresco-pdf-renderer-1.1-linux.tgz
 
 export ASS_DOWNLOAD=https://download.alfresco.com/cloudfront/release/community/SearchServices/1.4.0/alfresco-search-services-1.4.0.zip
 
-export GOOGLEDOCSREPO=$ALFRESCO_DISTRIBUTION/amps/alfresco-googledocs-repo-community-3.1.0.amp
-export GOOGLEDOCSSHARE=$ALFRESCO_DISTRIBUTION/amps/alfresco-googledocs-share-community-3.1.0.amp
+export GOOGLEDOCSREPO=$BASE_DOWNLOAD/amps/alfresco-googledocs-repo-community-3.1.0.amp
+export GOOGLEDOCSSHARE=$BASE_DOWNLOAD/amps/alfresco-googledocs-share-community-3.1.0.amp
 
-export AOS_VTI=$ALFRESCO_DISTRIBUTION/webapps/_vti_bin.war
-export AOS_SERVER_ROOT=$ALFRESCO_DISTRIBUTION/web-server/ROOT.war
-export AOS_AMP=$ALFRESCO_DISTRIBUTION/amps/alfresco-aos-module-1.3.0.amp
+export AOS_AMP=$BASE_DOWNLOAD/amps/alfresco-aos-module-1.3.0.amp
 
 export BASE_BART_DOWNLOAD=https://raw.githubusercontent.com/toniblyx/alfresco-backup-and-recovery-tool/master/src/
 
@@ -167,9 +158,9 @@ fi
 
 URLERROR=0
 
-for REMOTE in $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
-        $LIBREOFFICE $ALFREPOWAR $ALFSHAREWAR $ALFSHARESERVICES $GOOGLEDOCSREPO \
-        $GOOGLEDOCSSHARE $ASS_DOWNLOAD $AOS_VTI $AOS_SERVER_ROOT
+for REMOTE in $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
+        $LIBREOFFICE $GOOGLEDOCSREPO \
+        $GOOGLEDOCSSHARE $for REMOTE
 
 do
         wget --spider $REMOTE --no-check-certificate >& /dev/null
@@ -240,6 +231,14 @@ else
   echo "Skipped updating limits.conf"
   echo
 fi
+
+
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Download Alfresco distribution from $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+sudo curl -# -L -o $TMP_INSTALL/alfresco-content-services-community-distribution.zip $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL
+sudo unzip -j $TMP_INSTALL/alfresco-content-services-community-distribution.zip -d $TMP_INSTALL/alfresco-content-services-community-distribution
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -436,7 +435,7 @@ echo
     sudo chmod u+x $ALF_HOME/addons/apply.sh
   fi
   if [ ! -f "$ALF_HOME/addons/alfresco-mmt.jar" ]; then
-    sudo curl -# -o $ALF_HOME/addons/alfresco-mmt.jar $ALFMMTJAR
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-mmt.jar $ALF_HOME/addons/alfresco-mmt.jar
   fi
 
   # Add the jar modules dir
@@ -445,8 +444,8 @@ echo
 
   sudo mkdir -p $ALF_HOME/bin
   if [ ! -f "$ALF_HOME/bin/alfresco-pdf-renderer" ]; then
-    echo "Downloading Alfresco PDF Renderer binary (alfresco-pdf-renderer)..."
-    sudo curl -# -o $TMP_INSTALL/alfresco-pdf-renderer.tgz $ALFRESCO_PDF_RENDERER
+    echo "Alfresco PDF Renderer binary (alfresco-pdf-renderer)..."
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-pdf-renderer-*-linux.tgz $TMP_INSTALL/alfresco-pdf-renderer.tgz
     sudo tar -xf $TMP_INSTALL/alfresco-pdf-renderer.tgz -C $TMP_INSTALL
     sudo mv $TMP_INSTALL/alfresco-pdf-renderer $ALF_HOME/bin/
   fi
@@ -524,12 +523,12 @@ echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 read -e -p "Add Alfresco Repository war file${ques} [y/n] " -i "$DEFAULTYESNO" installwar
 if [ "$installwar" = "y" ]; then
 
-  echogreen "Downloading alfresco war file..."
-  sudo curl -# -o $ALF_HOME/addons/war/alfresco.war $ALFREPOWAR
+  echogreen "Copy alfresco war file..."
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco.war $ALF_HOME/addons/war/alfresco.war
   echo
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml -u $GIT_USER:$GIT_PASSWORD $ALFRESCO_DISTRIBUTION/web-server/conf/Catalina/localhost/alfresco.xml
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco.xml $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml
 
   echogreen "Finished adding Alfresco Repository war file"
   echo
@@ -542,11 +541,11 @@ fi
 read -e -p "Add Share Client war file${ques} [y/n] " -i "$DEFAULTYESNO" installsharewar
 if [ "$installsharewar" = "y" ]; then
 
-  echogreen "Downloading Share war file..."
-  sudo curl -# -o $ALF_HOME/addons/war/share.war $ALFSHAREWAR
+  echogreen "Copy Share war file..."
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/share.war $ALF_HOME/addons/war/share.war
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/share.xml -u $GIT_USER:$GIT_PASSWORD $ALFRESCO_DISTRIBUTION/web-server/conf/Catalina/localhost/share.xml
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/share.xml $CATALINA_HOME/conf/Catalina/localhost/share.xml
 
   echo
   echogreen "Finished adding Share war file"
@@ -564,9 +563,8 @@ if [ "$installwar" = "y" ]; then
     echored "You must install Share Services if you intend to use Share Client."
     read -e -p "Add Share Services plugin${ques} [y/n] " -i "$DEFAULTYESNO" installshareservices
     if [ "$installshareservices" = "y" ]; then
-      echo "Downloading Share Services addon..."
-      curl -# -O $ALFSHARESERVICES
-      sudo mv alfresco-share-services*.amp $ALF_HOME/addons/alfresco/
+      echo "Copy Share Services addon..."
+      sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-share-services*.amp $ALF_HOME/addons/alfresco/
     fi
 fi
 
@@ -597,10 +595,10 @@ if [ "$installssharepoint" = "y" ]; then
     echogreen "Downloading Alfresco Office Services amp file"
     # Sub shell to keep the file name
     (cd $ALF_HOME/addons/alfresco;sudo curl -# -O $AOS_AMP)
-    echogreen "Downloading _vti_bin.war into tomcat/webapps"
-    sudo curl -# -o $ALF_HOME/tomcat/webapps/_vti_bin.war $AOS_VTI
-    echogreen "Downloading ROOT.war into tomcat/webapps"
-    sudo curl -# -o $ALF_HOME/tomcat/webapps/ROOT.war $AOS_SERVER_ROOT
+    echogreen "Copy _vti_bin.war into tomcat/webapps"
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/_vti_bin.war $ALF_HOME/tomcat/webapps/_vti_bin.war
+    echogreen "Copy ROOT.war into tomcat/webapps"
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/ROOT.war $ALF_HOME/tomcat/webapps/ROOT.war
 fi
 
 # Install of war and addons complete, apply them to war file
