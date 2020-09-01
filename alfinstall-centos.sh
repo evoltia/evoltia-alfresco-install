@@ -160,7 +160,7 @@ URLERROR=0
 
 for REMOTE in $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
         $LIBREOFFICE $GOOGLEDOCSREPO \
-        $GOOGLEDOCSSHARE $for REMOTE
+        $GOOGLEDOCSSHARE
 
 do
         wget --spider $REMOTE --no-check-certificate >& /dev/null
@@ -659,71 +659,6 @@ else
   echo "Skipping installing Solr6."
   echo "You can always install Solr6 at a later time."
   echo
-fi
-
-echo
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Alfresco BART - Backup and Recovery Tool"
-echo "Alfresco BART is a backup and recovery tool for Alfresco ECM. Is a shell script"
-echo "tool based on Duplicity for Alfresco backups and restore from a local file system,"
-echo "FTP, SCP or Amazon S3 of all its components: indexes, data base, content store "
-echo "and all deployment and configuration files."
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-read -e -p "Install B.A.R.T${ques} [y/n] " -i "$DEFAULTYESNO" installbart
-
-if [ "$installbart" = "y" ]; then
- echogreen "Installing B.A.R.T"
-
-
- sudo mkdir -p $ALF_HOME/scripts/bart
- sudo mkdir -p $ALF_HOME/logs/bart
- sudo curl -# -o $TMP_INSTALL/$BART_PROPERTIES $BASE_BART_DOWNLOAD$BART_PROPERTIES
- sudo curl -# -o $TMP_INSTALL/$BART_EXECUTE $BASE_BART_DOWNLOAD$BART_EXECUTE
-
- # Update bart settings
- ALFHOMEESCAPED="${ALF_HOME//\//\\/}"
- BARTLOGPATH="$ALF_HOME/logs/bart"
- ALFBRTPATH="$ALF_HOME/scripts/bart"
- INDEXESDIR="\$\{ALF_DIRROOT\}/solr6"
- # Escape for sed
- BARTLOGPATH="${BARTLOGPATH//\//\\/}"
- ALFBRTPATH="${ALFBRTPATH//\//\\/}"
- INDEXESDIR="${INDEXESDIR//\//\\/}"
-
- sed -i "s/ALF_INSTALLATION_DIR\=.*/ALF_INSTALLATION_DIR\=$ALFHOMEESCAPED/g" $TMP_INSTALL/$BART_PROPERTIES
- sed -i "s/ALFBRT_LOG_DIR\=.*/ALFBRT_LOG_DIR\=$BARTLOGPATH/g" $TMP_INSTALL/$BART_PROPERTIES
- sed -i "s/INDEXES_DIR\=.*/INDEXES_DIR\=$INDEXESDIR/g" $TMP_INSTALL/$BART_PROPERTIES
- sudo cp $TMP_INSTALL/$BART_PROPERTIES $ALF_HOME/scripts/bart/$BART_PROPERTIES
- sed -i "s/ALFBRT_PATH\=.*/ALFBRT_PATH\=$ALFBRTPATH/g" $TMP_INSTALL/$BART_EXECUTE
- sudo cp $TMP_INSTALL/$BART_EXECUTE $ALF_HOME/scripts/bart/$BART_EXECUTE
-
- sudo chmod 700 $ALF_HOME/scripts/bart/$BART_PROPERTIES
- sudo chmod 774 $ALF_HOME/scripts/bart/$BART_EXECUTE
-
- # Install dependency
- sudo yum $APTVERBOSITY install duplicity;
-
- # Add to cron tab
- tmpfile=/tmp/crontab.tmp
-
- # read crontab and remove custom entries (usually not there since after a reboot
- # QNAP restores to default crontab: http://wiki.qnap.com/wiki/Add_items_to_crontab#Method_2:_autorun.sh
- sudo -u $ALF_USER crontab -l | grep -vi "alfresco-bart.sh" > $tmpfile
-
- # add custom entries to crontab
- echo "0 5 * * * $ALF_HOME/scripts/bart/$BART_EXECUTE backup" >> $tmpfile
-
- #load crontab from file
- sudo -u $ALF_USER crontab $tmpfile
-
- # remove temporary file
- rm $tmpfile
-
- # restart crontab
- sudo service cron restart
-
- echogreen "B.A.R.T Cron is installed to run in 5AM every day as the $ALF_USER user"
-
 fi
 
 # Finally, set the permissions
