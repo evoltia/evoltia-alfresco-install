@@ -28,28 +28,32 @@ export LOCALE=es_ES
 export ENCODING=UTF-8
 export LOCALESUPPORT=$LOCALE.$ENCODING
 
-export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.53/bin/apache-tomcat-8.0.53.tar.gz
+export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.43/bin/apache-tomcat-8.5.43-deployer.tar.gz
 export JDBCPOSTGRESURL=https://jdbc.postgresql.org/download
-export JDBCPOSTGRES=postgresql-42.2.5.jar
+export JDBCPOSTGRES=postgresql-42.2.6.jar
 export JDBCMYSQLURL=https://dev.mysql.com/get/Downloads/Connector-J
 export JDBCMYSQL=mysql-connector-java-5.1.47.tar.gz
 
 export LIBREOFFICE=http://download.documentfoundation.org/libreoffice/stable/6.4.6/rpm/x86_64/LibreOffice_6.4.6_Linux_x86-64_rpm.tar.gz
-export ALFRESCO_PDF_RENDERER=https://artifacts.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/1.1/alfresco-pdf-renderer-1.1-linux.tgz
 
-export ALFREPOWAR=https://downloads.loftux.net/public/content/org/alfresco/content-services-community/6.1.1/content-services-community-6.1.1.war
-export ALFSHAREWAR=https://downloads.loftux.net/public/content/org/alfresco/share/6.1.0/share-6.1.0.war
-export ALFSHARESERVICES=https://downloads.loftux.net/public/content/org/alfresco/alfresco-share-services/6.1.0/alfresco-share-services-6.1.0.amp
-export ALFMMTJAR=https://downloads.loftux.net/public/content/org/alfresco/alfresco-mmt/6.0/alfresco-mmt-6.0.jar
+## https://www.alfresco.com/es/thank-you/thank-you-downloading-alfresco-community-edition
+export ALFRESCO_DISTRIBUTION_DOWNLOAD_URL=https://download.alfresco.com/cloudfront/release/community/201911-GA-build-368/alfresco-content-services-community-distribution-6.2.0-ga.zip
+export ALFRESCO_DISTRIBUTION=$BASE_DOWNLOAD/alfresco-content-services-community-distribution-6.2.0-ga
 
-export ASS_DOWNLOAD=https://downloads.loftux.net/public/content/org/alfresco/alfresco-search-services/1.3.0.1/alfresco-search-services-1.3.0.1.zip
+export ALFREPOWAR=$ALFRESCO_DISTRIBUTION/web-server/webapps/alfresco.war
+export ALFSHAREWAR=$ALFRESCO_DISTRIBUTION/web-server/webapps/share.war
+export ALFSHARESERVICES=$ALFRESCO_DISTRIBUTION/amps/alfresco-share-services.amp
+export ALFMMTJAR=$ALFRESCO_DISTRIBUTION/bin/alfresco-mmt.jar
+export ALFRESCO_PDF_RENDERER=$ALFRESCO_DISTRIBUTION/alfresco-pdf-renderer-1.1-linux.tgz
 
-export GOOGLEDOCSREPO=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-repo/3.0.4.3/alfresco-googledocs-repo-3.0.4.3.amp
-export GOOGLEDOCSSHARE=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-share/3.0.4.3/alfresco-googledocs-share-3.0.4.3.amp
+export ASS_DOWNLOAD=https://download.alfresco.com/cloudfront/release/community/SearchServices/1.4.0/alfresco-search-services-1.4.0.zip
 
-export AOS_VTI=https://downloads.loftux.net/public/content/org/alfresco/aos-module/alfresco-vti-bin/1.2.2/alfresco-vti-bin-1.2.2.war
-export AOS_SERVER_ROOT=https://downloads.loftux.net/public/content/org/alfresco/alfresco-server-root/6.0.1/alfresco-server-root-6.0.1.war
-export AOS_AMP=https://downloads.loftux.net/public/content/org/alfresco/aos-module/alfresco-aos-module/1.2.2/alfresco-aos-module-1.2.2.amp
+export GOOGLEDOCSREPO=$ALFRESCO_DISTRIBUTION/amps/alfresco-googledocs-repo-community-3.1.0.amp
+export GOOGLEDOCSSHARE=$ALFRESCO_DISTRIBUTION/amps/alfresco-googledocs-share-community-3.1.0.amp
+
+export AOS_VTI=$ALFRESCO_DISTRIBUTION/webapps/_vti_bin.war
+export AOS_SERVER_ROOT=$ALFRESCO_DISTRIBUTION/web-server/ROOT.war
+export AOS_AMP=$ALFRESCO_DISTRIBUTION/amps/alfresco-aos-module-1.3.0.amp
 
 export BASE_BART_DOWNLOAD=https://raw.githubusercontent.com/toniblyx/alfresco-backup-and-recovery-tool/master/src/
 
@@ -340,66 +344,14 @@ fi
 
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Nginx can be used as frontend to Tomcat."
-echo "This installation will add config default proxying to Alfresco tomcat."
-echo "The config file also have sample config for ssl."
-echo "You can run Alfresco fine without installing nginx."
-echo "If you prefer to use Apache, install that manually. Or you can use iptables"
-echo "forwarding, sample script in $ALF_HOME/scripts/iptables.sh"
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-read -e -p "Install nginx${ques} [y/n] " -i "$DEFAULTYESNO" installnginx
-if [ "$installnginx" = "y" ]; then
-  echoblue "Installing nginx. Fetching packages..."
-  echo
-sudo -s << EOF
-  echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list
-  echo "deb-src http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list
-  sudo curl -# -o /tmp/alfrescoinstall/nginx_signing.key http://nginx.org/keys/nginx_signing.key
-  apt-key add /tmp/alfrescoinstall/nginx_signing.key
-  #echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -cs) main" >> /etc/apt/sources.list
-  #apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
-  # Alternate with spdy support and more, change  apt install -> nginx-custom
-  #echo "deb http://ppa.launchpad.net/brianmercer/nginx/ubuntu $(lsb_release -cs) main" >> /etc/apt/sources.list
-  #apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8D0DC64F
-EOF
-  sudo yum $APTVERBOSITY update && sudo yum $APTVERBOSITY install nginx
-  sudo service nginx stop
-  sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
-  sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.sample
-  sudo curl -# -o /etc/nginx/nginx.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/nginx.conf
-  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/alfresco.conf
-  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf.ssl -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/alfresco.conf.ssl 
-  sudo curl -# -o /etc/nginx/conf.d/basic-settings.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/basic-settings.conf
-  sudo mkdir -p /var/cache/nginx/alfresco
-  # Make the ssl dir as this is what is used in sample config
-  sudo mkdir -p /etc/nginx/ssl
-  sudo mkdir -p $ALF_HOME/www
-  if [ ! -f "$ALF_HOME/www/maintenance.html" ]; then
-    echo "Downloading maintenance html page..."
-    sudo curl -# -o $ALF_HOME/www/maintenance.html -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/maintenance.html
-  fi
-  sudo chown -R www-data:root /var/cache/nginx/alfresco
-  sudo chown -R www-data:root $ALF_HOME/www
-  ## Reload config file
-  sudo service nginx start
-
-  echo
-  echogreen "Finished installing nginx"
-  echo
-else
-  echo "Skipping install of nginx"
-fi
-
-echo
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Install Java JDK."
-echo "This will install OpenJDK 8 version of Java. If you prefer Oracle Java 8 "
+echo "This will install OpenJDK 11 version of Java. If you prefer Oracle Java 11 "
 echo "you need to download and install that manually."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Install OpenJDK${ques} [y/n] " -i "$DEFAULTYESNO" installjdk
 if [ "$installjdk" = "y" ]; then
   echoblue "Installing OpenJDK..."
-  sudo yum $APTVERBOSITY install java-1.8.0-openjdk
+  sudo yum $APTVERBOSITY install java-11-openjdk-devel
   echo
   echogreen "Make sure correct default java is selected!"
   echo
@@ -577,7 +529,7 @@ if [ "$installwar" = "y" ]; then
   echo
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/tomcat/alfresco.xml
+  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml -u $GIT_USER:$GIT_PASSWORD $ALFRESCO_DISTRIBUTION/web-server/conf/Catalina/localhost/alfresco.xml
 
   echogreen "Finished adding Alfresco Repository war file"
   echo
@@ -594,7 +546,7 @@ if [ "$installsharewar" = "y" ]; then
   sudo curl -# -o $ALF_HOME/addons/war/share.war $ALFSHAREWAR
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/share.xml -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/tomcat/share.xml
+  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/share.xml -u $GIT_USER:$GIT_PASSWORD $ALFRESCO_DISTRIBUTION/web-server/conf/Catalina/localhost/share.xml
 
   echo
   echogreen "Finished adding Share war file"
