@@ -28,7 +28,7 @@ export LOCALE=es_ES
 export ENCODING=UTF-8
 export LOCALESUPPORT=$LOCALE.$ENCODING
 
-export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.43/bin/apache-tomcat-8.5.43-deployer.tar.gz
+export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.43/bin/apache-tomcat-8.5.43.tar.gz
 export JDBCPOSTGRESURL=https://jdbc.postgresql.org/download
 export JDBCPOSTGRES=postgresql-42.2.6.jar
 export JDBCMYSQLURL=https://dev.mysql.com/get/Downloads/Connector-J
