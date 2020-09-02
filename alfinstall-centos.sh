@@ -646,19 +646,6 @@ if [ "$installsolr" = "y" ]; then
   sudo curl -# -o $ALF_HOME/solr6/solr.in.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/search/solr.in.sh
   sudo chmod u+x $ALF_HOME/solr6/solr.in.sh
 
-  ## Cetirficados
-  sudo mkdir -p $ALF_HOME/solr6/solrhome/alfresco
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl-keystore-passwords.properties $KEYSTOREBASE/ssl-keystore-passwords.properties
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl-truststore-passwords.properties $KEYSTOREBASE/ssl-truststore-passwords.properties
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl.repo.client.keystore $KEYSTOREBASE/ssl.keystore
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl.repo.client.truststore $KEYSTOREBASE/ssl.truststore
-
-  sudo mkdir -p $ALF_HOME/solr6/solrhome/archive
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl-keystore-passwords.properties $KEYSTOREBASE/ssl-keystore-passwords.properties
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl-truststore-passwords.properties $KEYSTOREBASE/ssl-truststore-passwords.properties
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl.repo.client.keystore $KEYSTOREBASE/ssl.keystore
-  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl.repo.client.truststore $KEYSTOREBASE/ssl.truststore
-
 # Enable the service
     sudo systemctl enable alfresco-search.service
     sudo systemctl daemon-reload
