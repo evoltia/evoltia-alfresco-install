@@ -44,6 +44,9 @@ export ASS_DOWNLOAD=https://download.alfresco.com/cloudfront/release/community/S
 export GOOGLEDOCSREPO=$BASE_DOWNLOAD/amps/alfresco-googledocs-repo-community-3.1.0.amp
 export GOOGLEDOCSSHARE=$BASE_DOWNLOAD/amps/alfresco-googledocs-share-community-3.1.0.amp
 
+export SUPPORT_TOOLS_AMP_REPO=$BASE_DOWNLOAD/amps/support-tools-repo-1.2.0.0-SNAPSHOT-amp.amp
+export SUPPORT_TOOLS_AMP_SHARE=$BASE_DOWNLOAD/amps/support-tools-share-1.2.0.0-SNAPSHOT-amp.amp
+
 export AOS_AMP=$BASE_DOWNLOAD/amps/alfresco-aos-module-1.3.0.amp
 
 export BASE_BART_DOWNLOAD=https://raw.githubusercontent.com/toniblyx/alfresco-backup-and-recovery-tool/master/src/
@@ -159,8 +162,7 @@ fi
 URLERROR=0
 
 for REMOTE in $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
-        $LIBREOFFICE $GOOGLEDOCSREPO \
-        $GOOGLEDOCSSHARE
+        $LIBREOFFICE $GOOGLEDOCSREPO $GOOGLEDOCSSHARE $SUPPORT_TOOLS_AMP_REPO $SUPPORT_TOOLS_AMP_SHARE
 
 do
         wget --spider $REMOTE --no-check-certificate >& /dev/null
@@ -578,6 +580,20 @@ if [ "$installgoogledocs" = "y" ]; then
   if [ "$installsharewar" = "y" ]; then
     curl -# -O $GOOGLEDOCSSHARE
     sudo mv alfresco-googledocs-share* $ALF_HOME/addons/share/
+  fi
+fi
+fi
+
+read -e -p "Add OOTBee Support Tools [y/n] " -i "$DEFAULTYESNO" installoobtee
+if [ "$installoobtee" = "y" ]; then
+  echo "Copy support-tools-repo-1.2.0.0-SNAPSHOT.amp and support-tools-share-1.2.0.0-SNAPSHOT-amp.amp ..."
+  if [ "$installwar" = "y" ]; then
+    curl -# -O $SUPPORT_TOOLS_AMP_REPO
+    sudo mv support-tools-repo-*.amp $ALF_HOME/addons/alfresco/
+  fi
+  if [ "$installsharewar" = "y" ]; then
+    curl -# -O $SUPPORT_TOOLS_AMP_SHARE
+    sudo mv upport-tools-share* $ALF_HOME/addons/share/
   fi
 fi
 fi
