@@ -343,6 +343,47 @@ else
   echo
 fi
 
+
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Nginx can be used as frontend to Tomcat."
+echo "This installation will add config default proxying to Alfresco tomcat."
+echo "The config file also have sample config for ssl."
+echo "You can run Alfresco fine without installing nginx."
+echo "If you prefer to use Apache, install that manually. Or you can use iptables"
+echo "forwarding, sample script in $ALF_HOME/scripts/iptables.sh"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+read -e -p "Install nginx${ques} [y/n] " -i "$DEFAULTYESNO" installnginx
+if [ "$installnginx" = "y" ]; then
+  echoblue "Installing nginx. Fetching packages..."
+
+  sudo dnf $APTVERBOSITY update && sudo dnf $APTVERBOSITY install nginx
+  sudo sudo systemctl stop nginx
+  sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
+  sudo curl -# -o /etc/nginx/nginx.conf $BASE_DOWNLOAD/nginx/nginx.conf
+  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf $BASE_DOWNLOAD/nginx/alfresco.conf
+  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf.ssl $BASE_DOWNLOAD/nginx/alfresco.conf.ssl 
+  sudo curl -# -o /etc/nginx/conf.d/basic-settings.conf $BASE_DOWNLOAD/nginx/basic-settings.conf
+  sudo mkdir -p /var/cache/nginx/alfresco
+  # Make the ssl dir as this is what is used in sample config
+  sudo mkdir -p /etc/nginx/ssl
+  sudo mkdir -p $ALF_HOME/www
+  if [ ! -f "$ALF_HOME/www/maintenance.html" ]; then
+    echo "Downloading maintenance html page..."
+    sudo curl -# -o $ALF_HOME/www/maintenance.html $BASE_DOWNLOAD/nginx/maintenance.html
+  fi
+  sudo chown -R www-data:root /var/cache/nginx/alfresco
+  sudo chown -R www-data:root $ALF_HOME/www
+  ## Reload config file
+  sudo sudo systemctl start nginx
+
+  echo
+  echogreen "Finished installing nginx"
+  echo
+else
+  echo "Skipping install of nginx"
+fi
+
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Install Java JDK."
@@ -582,7 +623,6 @@ if [ "$installgoogledocs" = "y" ]; then
     sudo mv alfresco-googledocs-share* $ALF_HOME/addons/share/
   fi
 fi
-fi
 
 read -e -p "Add OOTBee Support Tools [y/n] " -i "$DEFAULTYESNO" installoobtee
 if [ "$installoobtee" = "y" ]; then
@@ -593,9 +633,10 @@ if [ "$installoobtee" = "y" ]; then
   fi
   if [ "$installsharewar" = "y" ]; then
     curl -# -O $SUPPORT_TOOLS_AMP_SHARE
-    sudo mv upport-tools-share* $ALF_HOME/addons/share/
+    sudo mv support-tools-share* $ALF_HOME/addons/share/
   fi
 fi
+
 fi
 
 
