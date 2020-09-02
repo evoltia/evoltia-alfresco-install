@@ -28,7 +28,7 @@ export LOCALE=es_ES
 export ENCODING=UTF-8
 export LOCALESUPPORT=$LOCALE.$ENCODING
 
-export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.43/bin/apache-tomcat-8.5.43.tar.gz
+export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.57/bin/apache-tomcat-8.5.57.tar.gz
 export JDBCPOSTGRESURL=https://jdbc.postgresql.org/download
 export JDBCPOSTGRES=postgresql-42.2.6.jar
 export JDBCMYSQLURL=https://dev.mysql.com/get/Downloads/Connector-J
@@ -283,7 +283,7 @@ if [ "$installtomcat" = "y" ]; then
   sudo mkdir -p $CATALINA_HOME/shared/classes/alfresco/web-extension
   sudo mkdir -p $CATALINA_HOME/shared/lib
   # Add endorsed dir
-  sudo mkdir -p $CATALINA_HOME/endorsed
+  ## sudo mkdir -p $CATALINA_HOME/endorsed
 
   echo
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -633,7 +633,7 @@ if [ "$installsolr" = "y" ]; then
   sudo yum $APTVERBOSITY install unzip
 
   echogreen "Downloading Solr6 file..."
-  sudo curl -# -o $ALF_HOME/solr6.zip $ASS_DOWNLOAD
+  sudo curl -# -L -o $ALF_HOME/solr6.zip $ASS_DOWNLOAD
   echogreen "Expanding Solr6 file..."
   cd $ALF_HOME
   sudo unzip -q solr6.zip
@@ -645,6 +645,20 @@ if [ "$installsolr" = "y" ]; then
   sudo curl -# -o $ALF_HOME/solr6/solrhome/conf/shared.properties -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/search/shared.properties
   sudo curl -# -o $ALF_HOME/solr6/solr.in.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/search/solr.in.sh
   sudo chmod u+x $ALF_HOME/solr6/solr.in.sh
+
+  ## Cetirficados
+  sudo mkdir -p $ALF_HOME/solr6/solrhome/alfresco
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl-keystore-passwords.properties $KEYSTOREBASE/ssl-keystore-passwords.properties
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl-truststore-passwords.properties $KEYSTOREBASE/ssl-truststore-passwords.properties
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl.repo.client.keystore $KEYSTOREBASE/ssl.keystore
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/alfreso/ssl.repo.client.truststore $KEYSTOREBASE/ssl.truststore
+
+  sudo mkdir -p $ALF_HOME/solr6/solrhome/archive
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl-keystore-passwords.properties $KEYSTOREBASE/ssl-keystore-passwords.properties
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl-truststore-passwords.properties $KEYSTOREBASE/ssl-truststore-passwords.properties
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl.repo.client.keystore $KEYSTOREBASE/ssl.keystore
+  sudo curl -# -o $ALF_HOME/solr6/solrhome/archive/ssl.repo.client.truststore $KEYSTOREBASE/ssl.truststore
+
 # Enable the service
     sudo systemctl enable alfresco-search.service
     sudo systemctl daemon-reload
