@@ -372,8 +372,11 @@ if [ "$installnginx" = "y" ]; then
     echo "Downloading maintenance html page..."
     sudo curl -# -o $ALF_HOME/www/maintenance.html $BASE_DOWNLOAD/nginx/maintenance.html
   fi
-  sudo chown -R www-data:root /var/cache/nginx/alfresco
-  sudo chown -R www-data:root $ALF_HOME/www
+  sudo chown -R nginx:nginx /var/cache/nginx/alfresco
+  sudo chown -R nginx:nginx $ALF_HOME/www
+  ## Error: 13-permission-denied-while-connecting-to-upstreamnginx on centos server -
+  sudo setsebool -P httpd_can_network_connect 1
+  
   ## Reload config file
   sudo sudo systemctl start nginx
 
