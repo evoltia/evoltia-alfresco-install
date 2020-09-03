@@ -376,7 +376,7 @@ if [ "$installnginx" = "y" ]; then
   sudo chown -R nginx:nginx $ALF_HOME/www
   ## Error: 13-permission-denied-while-connecting-to-upstreamnginx on centos server -
   sudo setsebool -P httpd_can_network_connect 1
-  
+
   ## Reload config file
   sudo sudo systemctl start nginx
 
@@ -524,13 +524,9 @@ echo
     sudo curl -# -o $ALF_HOME/scripts/libreoffice.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/libreoffice.sh
     sudo sed -i "s/@@LOCALESUPPORT@@/$LOCALESUPPORT/g" $ALF_HOME/scripts/libreoffice.sh
   fi
-  if [ ! -f "$ALF_HOME/scripts/iptables.sh" ]; then
-    echo "Downloading iptables.sh script..."
-    sudo curl -# -o $ALF_HOME/scripts/iptables.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/iptables.sh
-  fi
-  if [ ! -f "$ALF_HOME/scripts/alfresco-iptables.conf" ]; then
-    echo "Downloading alfresco-iptables.conf upstart script..."
-    sudo curl -# -o $ALF_HOME/scripts/alfresco-iptables.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/alfresco-iptables.conf
+  if [ ! -f "$ALF_HOME/scripts/firewall.sh" ]; then
+    echo "Downloading firewall.sh script..."
+    sudo curl -# -o $ALF_HOME/scripts/firewall.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/firewall.sh
   fi
   if [ ! -f "$ALF_HOME/scripts/ams.sh" ]; then
     echo "Downloading maintenance shutdown script..."
@@ -707,8 +703,8 @@ if [ "$installsolr" = "y" ]; then
   sudo chmod u+x $ALF_HOME/solr6/solr.in.sh
 
 # Enable the service
-    sudo systemctl enable alfresco-search.service
-    sudo systemctl daemon-reload
+  sudo systemctl enable alfresco-search.service
+  sudo systemctl daemon-reload
 
   echo
   echogreen "Finished installing Solr6 engine."
@@ -748,8 +744,11 @@ echo "3. Update database and other settings in alfresco-global.properties"
 echo "   You will find this file in $CATALINA_HOME/shared/classes"
 echored "   Really, do this. There are some settings there that you need to verify."
 echo
-echo "4. Update properties for BART (if installed) in $ALF_HOME/scripts/bart/alfresco-bart.properties"
-echo "   DBNAME,DBUSER,DBPASS,DBHOST,REC_MYDBNAME,REC_MYUSER,REC_MYPASS,REC_MYHOST,DBTYPE "
+echo "4. Change Solr from https to none for alfresco and archive"
+echo "   $ALF_HOME/alf_data/solr6/solrhome/alfresco/conf/solrcore.properties "
+echo "   alfresco.secureComms change from https to none"
+echo "   $ALF_HOMEalf_data/solr6/solrhome/archive/conf/solrcore.properties "
+echo "   alfresco.secureComms change from https to none"
 echo
 echo "5. Update cpu settings in $ALF_HOME/scripts/limitconvert.sh if you have more than 2 cores."
 echo
