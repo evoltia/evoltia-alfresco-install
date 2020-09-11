@@ -6,7 +6,7 @@
 # Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License (CC BY-SA 3.0)
 # -------
 
-USER=www-data
+USER=nginx
 ALF_HOME_WWW=/opt/alfresco/www
 DOWNTIME=10
 

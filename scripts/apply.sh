@@ -5,7 +5,7 @@
 # Copyright 2013-2016 Loftux AB, Peter Löfgren
 # Distributed under the Creative Commons Attribution-ShareAlike 3.0 Unported License (CC BY-SA 3.0)
 # -------
-export JAVA_HOME="/usr/lib/jvm/java-8-oracle"
+export JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
 export JRE_HOME=$JAVA_HOME/jre
 export PATH=$PATH:$HOME/bin:$JRE_HOME/bin
 export ALF_HOME=/opt/alfresco
@@ -87,6 +87,10 @@ copy(){
 				echo "This can happen with an unexpected shutdown or if you run this startup script twice before tomcat is fully started."
 				echo "You need to manually remove this file if you are shure Alfresco tomcat is not running before copying again."
 			else
+				if [ ! -d "$CATALINA_HOME/webapps" ]; then
+					echo "mkdir $CATALINA_HOME/webapps"
+					mkdir -p $CATALINA_HOME/webapps
+				fi
 				if [ -e $CATALINA_HOME/webapps/alfresco.war.old ]; then
 					rm $CATALINA_HOME/webapps/alfresco.war.old
 				fi

@@ -28,28 +28,26 @@ export LOCALE=es_ES
 export ENCODING=UTF-8
 export LOCALESUPPORT=$LOCALE.$ENCODING
 
-export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.0.53/bin/apache-tomcat-8.0.53.tar.gz
+export TOMCAT_DOWNLOAD=http://archive.apache.org/dist/tomcat/tomcat-8/v8.5.57/bin/apache-tomcat-8.5.57.tar.gz
 export JDBCPOSTGRESURL=https://jdbc.postgresql.org/download
-export JDBCPOSTGRES=postgresql-42.2.5.jar
+export JDBCPOSTGRES=postgresql-42.2.6.jar
 export JDBCMYSQLURL=https://dev.mysql.com/get/Downloads/Connector-J
 export JDBCMYSQL=mysql-connector-java-5.1.47.tar.gz
 
 export LIBREOFFICE=http://download.documentfoundation.org/libreoffice/stable/6.4.6/rpm/x86_64/LibreOffice_6.4.6_Linux_x86-64_rpm.tar.gz
-export ALFRESCO_PDF_RENDERER=https://artifacts.alfresco.com/nexus/service/local/repositories/releases/content/org/alfresco/alfresco-pdf-renderer/1.1/alfresco-pdf-renderer-1.1-linux.tgz
 
-export ALFREPOWAR=https://downloads.loftux.net/public/content/org/alfresco/content-services-community/6.1.1/content-services-community-6.1.1.war
-export ALFSHAREWAR=https://downloads.loftux.net/public/content/org/alfresco/share/6.1.0/share-6.1.0.war
-export ALFSHARESERVICES=https://downloads.loftux.net/public/content/org/alfresco/alfresco-share-services/6.1.0/alfresco-share-services-6.1.0.amp
-export ALFMMTJAR=https://downloads.loftux.net/public/content/org/alfresco/alfresco-mmt/6.0/alfresco-mmt-6.0.jar
+## https://www.alfresco.com/es/thank-you/thank-you-downloading-alfresco-community-edition
+export ALFRESCO_DISTRIBUTION_DOWNLOAD_URL=https://download.alfresco.com/cloudfront/release/community/201911-GA-build-368/alfresco-content-services-community-distribution-6.2.0-ga.zip
 
-export ASS_DOWNLOAD=https://downloads.loftux.net/public/content/org/alfresco/alfresco-search-services/1.3.0.1/alfresco-search-services-1.3.0.1.zip
+export ASS_DOWNLOAD=https://download.alfresco.com/cloudfront/release/community/SearchServices/1.4.0/alfresco-search-services-1.4.0.zip
 
-export GOOGLEDOCSREPO=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-repo/3.0.4.3/alfresco-googledocs-repo-3.0.4.3.amp
-export GOOGLEDOCSSHARE=https://downloads.loftux.net/public/content/org/alfresco/integrations/alfresco-googledocs-share/3.0.4.3/alfresco-googledocs-share-3.0.4.3.amp
+export GOOGLEDOCSREPO=$BASE_DOWNLOAD/amps/alfresco-googledocs-repo-community-3.1.0.amp
+export GOOGLEDOCSSHARE=$BASE_DOWNLOAD/amps/alfresco-googledocs-share-community-3.1.0.amp
 
-export AOS_VTI=https://downloads.loftux.net/public/content/org/alfresco/aos-module/alfresco-vti-bin/1.2.2/alfresco-vti-bin-1.2.2.war
-export AOS_SERVER_ROOT=https://downloads.loftux.net/public/content/org/alfresco/alfresco-server-root/6.0.1/alfresco-server-root-6.0.1.war
-export AOS_AMP=https://downloads.loftux.net/public/content/org/alfresco/aos-module/alfresco-aos-module/1.2.2/alfresco-aos-module-1.2.2.amp
+export SUPPORT_TOOLS_AMP_REPO=$BASE_DOWNLOAD/amps/support-tools-repo-1.2.0.0-SNAPSHOT-amp.amp
+export SUPPORT_TOOLS_AMP_SHARE=$BASE_DOWNLOAD/amps/support-tools-share-1.2.0.0-SNAPSHOT-amp.amp
+
+export AOS_AMP=$BASE_DOWNLOAD/amps/alfresco-aos-module-1.3.0.amp
 
 export BASE_BART_DOWNLOAD=https://raw.githubusercontent.com/toniblyx/alfresco-backup-and-recovery-tool/master/src/
 
@@ -163,9 +161,8 @@ fi
 
 URLERROR=0
 
-for REMOTE in $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
-        $LIBREOFFICE $ALFREPOWAR $ALFSHAREWAR $ALFSHARESERVICES $GOOGLEDOCSREPO \
-        $GOOGLEDOCSSHARE $ASS_DOWNLOAD $AOS_VTI $AOS_SERVER_ROOT
+for REMOTE in $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL $TOMCAT_DOWNLOAD $JDBCPOSTGRESURL/$JDBCPOSTGRES $JDBCMYSQLURL/$JDBCMYSQL \
+        $LIBREOFFICE $GOOGLEDOCSREPO $GOOGLEDOCSSHARE $SUPPORT_TOOLS_AMP_REPO $SUPPORT_TOOLS_AMP_SHARE
 
 do
         wget --spider $REMOTE --no-check-certificate >& /dev/null
@@ -237,6 +234,14 @@ else
   echo
 fi
 
+
+echo
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+echo "Download Alfresco distribution from $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL"
+echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
+sudo curl -# -L -o $TMP_INSTALL/alfresco-content-services-community-distribution.zip $ALFRESCO_DISTRIBUTION_DOWNLOAD_URL
+sudo unzip -j $TMP_INSTALL/alfresco-content-services-community-distribution.zip -d $TMP_INSTALL/alfresco-content-services-community-distribution
+
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Tomcat is the application server that runs Alfresco."
@@ -280,7 +285,7 @@ if [ "$installtomcat" = "y" ]; then
   sudo mkdir -p $CATALINA_HOME/shared/classes/alfresco/web-extension
   sudo mkdir -p $CATALINA_HOME/shared/lib
   # Add endorsed dir
-  sudo mkdir -p $CATALINA_HOME/endorsed
+  ## sudo mkdir -p $CATALINA_HOME/endorsed
 
   echo
   echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
@@ -338,6 +343,7 @@ else
   echo
 fi
 
+
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Nginx can be used as frontend to Tomcat."
@@ -350,38 +356,29 @@ echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 read -e -p "Install nginx${ques} [y/n] " -i "$DEFAULTYESNO" installnginx
 if [ "$installnginx" = "y" ]; then
   echoblue "Installing nginx. Fetching packages..."
-  echo
-sudo -s << EOF
-  echo "deb http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list
-  echo "deb-src http://nginx.org/packages/ubuntu/ $(lsb_release -cs) nginx" >> /etc/apt/sources.list
-  sudo curl -# -o /tmp/alfrescoinstall/nginx_signing.key http://nginx.org/keys/nginx_signing.key
-  apt-key add /tmp/alfrescoinstall/nginx_signing.key
-  #echo "deb http://ppa.launchpad.net/nginx/stable/ubuntu $(lsb_release -cs) main" >> /etc/apt/sources.list
-  #apt-key adv --keyserver keyserver.ubuntu.com --recv-keys C300EE8C
-  # Alternate with spdy support and more, change  apt install -> nginx-custom
-  #echo "deb http://ppa.launchpad.net/brianmercer/nginx/ubuntu $(lsb_release -cs) main" >> /etc/apt/sources.list
-  #apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 8D0DC64F
-EOF
-  sudo yum $APTVERBOSITY update && sudo yum $APTVERBOSITY install nginx
-  sudo service nginx stop
+
+  sudo dnf $APTVERBOSITY update && sudo dnf $APTVERBOSITY install nginx
+  sudo sudo systemctl stop nginx
   sudo mv /etc/nginx/nginx.conf /etc/nginx/nginx.conf.backup
-  sudo mv /etc/nginx/conf.d/default.conf /etc/nginx/conf.d/default.conf.sample
-  sudo curl -# -o /etc/nginx/nginx.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/nginx.conf
-  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/alfresco.conf
-  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf.ssl -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/alfresco.conf.ssl 
-  sudo curl -# -o /etc/nginx/conf.d/basic-settings.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/basic-settings.conf
+  sudo curl -# -o /etc/nginx/nginx.conf $BASE_DOWNLOAD/nginx/nginx.conf
+  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf $BASE_DOWNLOAD/nginx/alfresco.conf
+  sudo curl -# -o /etc/nginx/conf.d/alfresco.conf.ssl $BASE_DOWNLOAD/nginx/alfresco.conf.ssl 
+  sudo curl -# -o /etc/nginx/conf.d/basic-settings.conf $BASE_DOWNLOAD/nginx/basic-settings.conf
   sudo mkdir -p /var/cache/nginx/alfresco
   # Make the ssl dir as this is what is used in sample config
   sudo mkdir -p /etc/nginx/ssl
   sudo mkdir -p $ALF_HOME/www
   if [ ! -f "$ALF_HOME/www/maintenance.html" ]; then
     echo "Downloading maintenance html page..."
-    sudo curl -# -o $ALF_HOME/www/maintenance.html -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/nginx/maintenance.html
+    sudo curl -# -o $ALF_HOME/www/maintenance.html $BASE_DOWNLOAD/nginx/maintenance.html
   fi
-  sudo chown -R www-data:root /var/cache/nginx/alfresco
-  sudo chown -R www-data:root $ALF_HOME/www
+  sudo chown -R nginx:nginx /var/cache/nginx/alfresco
+  sudo chown -R nginx:nginx $ALF_HOME/www
+  ## Error: 13-permission-denied-while-connecting-to-upstreamnginx on centos server -
+  sudo setsebool -P httpd_can_network_connect 1
+
   ## Reload config file
-  sudo service nginx start
+  sudo sudo systemctl start nginx
 
   echo
   echogreen "Finished installing nginx"
@@ -393,13 +390,13 @@ fi
 echo
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 echo "Install Java JDK."
-echo "This will install OpenJDK 8 version of Java. If you prefer Oracle Java 8 "
+echo "This will install OpenJDK 11 version of Java. If you prefer Oracle Java 11 "
 echo "you need to download and install that manually."
 echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
 read -e -p "Install OpenJDK${ques} [y/n] " -i "$DEFAULTYESNO" installjdk
 if [ "$installjdk" = "y" ]; then
   echoblue "Installing OpenJDK..."
-  sudo yum $APTVERBOSITY install java-1.8.0-openjdk
+  sudo yum $APTVERBOSITY install java-11-openjdk-devel
   echo
   echogreen "Make sure correct default java is selected!"
   echo
@@ -484,7 +481,7 @@ echo
     sudo chmod u+x $ALF_HOME/addons/apply.sh
   fi
   if [ ! -f "$ALF_HOME/addons/alfresco-mmt.jar" ]; then
-    sudo curl -# -o $ALF_HOME/addons/alfresco-mmt.jar $ALFMMTJAR
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-mmt.jar $ALF_HOME/addons/alfresco-mmt.jar
   fi
 
   # Add the jar modules dir
@@ -493,8 +490,8 @@ echo
 
   sudo mkdir -p $ALF_HOME/bin
   if [ ! -f "$ALF_HOME/bin/alfresco-pdf-renderer" ]; then
-    echo "Downloading Alfresco PDF Renderer binary (alfresco-pdf-renderer)..."
-    sudo curl -# -o $TMP_INSTALL/alfresco-pdf-renderer.tgz $ALFRESCO_PDF_RENDERER
+    echo "Alfresco PDF Renderer binary (alfresco-pdf-renderer)..."
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-pdf-renderer-*-linux.tgz $TMP_INSTALL/alfresco-pdf-renderer.tgz
     sudo tar -xf $TMP_INSTALL/alfresco-pdf-renderer.tgz -C $TMP_INSTALL
     sudo mv $TMP_INSTALL/alfresco-pdf-renderer $ALF_HOME/bin/
   fi
@@ -527,13 +524,9 @@ echo
     sudo curl -# -o $ALF_HOME/scripts/libreoffice.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/libreoffice.sh
     sudo sed -i "s/@@LOCALESUPPORT@@/$LOCALESUPPORT/g" $ALF_HOME/scripts/libreoffice.sh
   fi
-  if [ ! -f "$ALF_HOME/scripts/iptables.sh" ]; then
-    echo "Downloading iptables.sh script..."
-    sudo curl -# -o $ALF_HOME/scripts/iptables.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/iptables.sh
-  fi
-  if [ ! -f "$ALF_HOME/scripts/alfresco-iptables.conf" ]; then
-    echo "Downloading alfresco-iptables.conf upstart script..."
-    sudo curl -# -o $ALF_HOME/scripts/alfresco-iptables.conf -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/alfresco-iptables.conf
+  if [ ! -f "$ALF_HOME/scripts/firewall.sh" ]; then
+    echo "Downloading firewall.sh script..."
+    sudo curl -# -o $ALF_HOME/scripts/firewall.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/scripts/firewall.sh
   fi
   if [ ! -f "$ALF_HOME/scripts/ams.sh" ]; then
     echo "Downloading maintenance shutdown script..."
@@ -572,12 +565,12 @@ echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 read -e -p "Add Alfresco Repository war file${ques} [y/n] " -i "$DEFAULTYESNO" installwar
 if [ "$installwar" = "y" ]; then
 
-  echogreen "Downloading alfresco war file..."
-  sudo curl -# -o $ALF_HOME/addons/war/alfresco.war $ALFREPOWAR
+  echogreen "Copy alfresco war file..."
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco.war $ALF_HOME/addons/war/alfresco.war
   echo
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/tomcat/alfresco.xml
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco.xml $CATALINA_HOME/conf/Catalina/localhost/alfresco.xml
 
   echogreen "Finished adding Alfresco Repository war file"
   echo
@@ -590,11 +583,11 @@ fi
 read -e -p "Add Share Client war file${ques} [y/n] " -i "$DEFAULTYESNO" installsharewar
 if [ "$installsharewar" = "y" ]; then
 
-  echogreen "Downloading Share war file..."
-  sudo curl -# -o $ALF_HOME/addons/war/share.war $ALFSHAREWAR
+  echogreen "Copy Share war file..."
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/share.war $ALF_HOME/addons/war/share.war
 
   # Add default alfresco and share modules classloader config files
-  sudo curl -# -o $CATALINA_HOME/conf/Catalina/localhost/share.xml -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/tomcat/share.xml
+  sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/share.xml $CATALINA_HOME/conf/Catalina/localhost/share.xml
 
   echo
   echogreen "Finished adding Share war file"
@@ -612,9 +605,8 @@ if [ "$installwar" = "y" ]; then
     echored "You must install Share Services if you intend to use Share Client."
     read -e -p "Add Share Services plugin${ques} [y/n] " -i "$DEFAULTYESNO" installshareservices
     if [ "$installshareservices" = "y" ]; then
-      echo "Downloading Share Services addon..."
-      curl -# -O $ALFSHARESERVICES
-      sudo mv alfresco-share-services*.amp $ALF_HOME/addons/alfresco/
+      echo "Copy Share Services addon..."
+      sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/alfresco-share-services*.amp $ALF_HOME/addons/alfresco/
     fi
 fi
 
@@ -630,6 +622,20 @@ if [ "$installgoogledocs" = "y" ]; then
     sudo mv alfresco-googledocs-share* $ALF_HOME/addons/share/
   fi
 fi
+
+read -e -p "Add OOTBee Support Tools [y/n] " -i "$DEFAULTYESNO" installoobtee
+if [ "$installoobtee" = "y" ]; then
+  echo "Copy support-tools-repo-1.2.0.0-SNAPSHOT.amp and support-tools-share-1.2.0.0-SNAPSHOT-amp.amp ..."
+  if [ "$installwar" = "y" ]; then
+    curl -# -O $SUPPORT_TOOLS_AMP_REPO
+    sudo mv support-tools-repo-*.amp $ALF_HOME/addons/alfresco/
+  fi
+  if [ "$installsharewar" = "y" ]; then
+    curl -# -O $SUPPORT_TOOLS_AMP_SHARE
+    sudo mv support-tools-share* $ALF_HOME/addons/share/
+  fi
+fi
+
 fi
 
 
@@ -645,10 +651,10 @@ if [ "$installssharepoint" = "y" ]; then
     echogreen "Downloading Alfresco Office Services amp file"
     # Sub shell to keep the file name
     (cd $ALF_HOME/addons/alfresco;sudo curl -# -O $AOS_AMP)
-    echogreen "Downloading _vti_bin.war into tomcat/webapps"
-    sudo curl -# -o $ALF_HOME/tomcat/webapps/_vti_bin.war $AOS_VTI
-    echogreen "Downloading ROOT.war into tomcat/webapps"
-    sudo curl -# -o $ALF_HOME/tomcat/webapps/ROOT.war $AOS_SERVER_ROOT
+    echogreen "Copy _vti_bin.war into tomcat/webapps"
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/_vti_bin.war $ALF_HOME/tomcat/webapps/_vti_bin.war
+    echogreen "Copy ROOT.war into tomcat/webapps"
+    sudo cp $TMP_INSTALL/alfresco-content-services-community-distribution/ROOT.war $ALF_HOME/tomcat/webapps/ROOT.war
 fi
 
 # Install of war and addons complete, apply them to war file
@@ -683,7 +689,7 @@ if [ "$installsolr" = "y" ]; then
   sudo yum $APTVERBOSITY install unzip
 
   echogreen "Downloading Solr6 file..."
-  sudo curl -# -o $ALF_HOME/solr6.zip $ASS_DOWNLOAD
+  sudo curl -# -L -o $ALF_HOME/solr6.zip $ASS_DOWNLOAD
   echogreen "Expanding Solr6 file..."
   cd $ALF_HOME
   sudo unzip -q solr6.zip
@@ -695,9 +701,10 @@ if [ "$installsolr" = "y" ]; then
   sudo curl -# -o $ALF_HOME/solr6/solrhome/conf/shared.properties -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/search/shared.properties
   sudo curl -# -o $ALF_HOME/solr6/solr.in.sh -u $GIT_USER:$GIT_PASSWORD $BASE_DOWNLOAD/search/solr.in.sh
   sudo chmod u+x $ALF_HOME/solr6/solr.in.sh
+
 # Enable the service
-    sudo systemctl enable alfresco-search.service
-    sudo systemctl daemon-reload
+  sudo systemctl enable alfresco-search.service
+  sudo systemctl daemon-reload
 
   echo
   echogreen "Finished installing Solr6 engine."
@@ -709,71 +716,6 @@ else
   echo "Skipping installing Solr6."
   echo "You can always install Solr6 at a later time."
   echo
-fi
-
-echo
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-echo "Alfresco BART - Backup and Recovery Tool"
-echo "Alfresco BART is a backup and recovery tool for Alfresco ECM. Is a shell script"
-echo "tool based on Duplicity for Alfresco backups and restore from a local file system,"
-echo "FTP, SCP or Amazon S3 of all its components: indexes, data base, content store "
-echo "and all deployment and configuration files."
-echoblue "- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -"
-read -e -p "Install B.A.R.T${ques} [y/n] " -i "$DEFAULTYESNO" installbart
-
-if [ "$installbart" = "y" ]; then
- echogreen "Installing B.A.R.T"
-
-
- sudo mkdir -p $ALF_HOME/scripts/bart
- sudo mkdir -p $ALF_HOME/logs/bart
- sudo curl -# -o $TMP_INSTALL/$BART_PROPERTIES $BASE_BART_DOWNLOAD$BART_PROPERTIES
- sudo curl -# -o $TMP_INSTALL/$BART_EXECUTE $BASE_BART_DOWNLOAD$BART_EXECUTE
-
- # Update bart settings
- ALFHOMEESCAPED="${ALF_HOME//\//\\/}"
- BARTLOGPATH="$ALF_HOME/logs/bart"
- ALFBRTPATH="$ALF_HOME/scripts/bart"
- INDEXESDIR="\$\{ALF_DIRROOT\}/solr6"
- # Escape for sed
- BARTLOGPATH="${BARTLOGPATH//\//\\/}"
- ALFBRTPATH="${ALFBRTPATH//\//\\/}"
- INDEXESDIR="${INDEXESDIR//\//\\/}"
-
- sed -i "s/ALF_INSTALLATION_DIR\=.*/ALF_INSTALLATION_DIR\=$ALFHOMEESCAPED/g" $TMP_INSTALL/$BART_PROPERTIES
- sed -i "s/ALFBRT_LOG_DIR\=.*/ALFBRT_LOG_DIR\=$BARTLOGPATH/g" $TMP_INSTALL/$BART_PROPERTIES
- sed -i "s/INDEXES_DIR\=.*/INDEXES_DIR\=$INDEXESDIR/g" $TMP_INSTALL/$BART_PROPERTIES
- sudo cp $TMP_INSTALL/$BART_PROPERTIES $ALF_HOME/scripts/bart/$BART_PROPERTIES
- sed -i "s/ALFBRT_PATH\=.*/ALFBRT_PATH\=$ALFBRTPATH/g" $TMP_INSTALL/$BART_EXECUTE
- sudo cp $TMP_INSTALL/$BART_EXECUTE $ALF_HOME/scripts/bart/$BART_EXECUTE
-
- sudo chmod 700 $ALF_HOME/scripts/bart/$BART_PROPERTIES
- sudo chmod 774 $ALF_HOME/scripts/bart/$BART_EXECUTE
-
- # Install dependency
- sudo yum $APTVERBOSITY install duplicity;
-
- # Add to cron tab
- tmpfile=/tmp/crontab.tmp
-
- # read crontab and remove custom entries (usually not there since after a reboot
- # QNAP restores to default crontab: http://wiki.qnap.com/wiki/Add_items_to_crontab#Method_2:_autorun.sh
- sudo -u $ALF_USER crontab -l | grep -vi "alfresco-bart.sh" > $tmpfile
-
- # add custom entries to crontab
- echo "0 5 * * * $ALF_HOME/scripts/bart/$BART_EXECUTE backup" >> $tmpfile
-
- #load crontab from file
- sudo -u $ALF_USER crontab $tmpfile
-
- # remove temporary file
- rm $tmpfile
-
- # restart crontab
- sudo service cron restart
-
- echogreen "B.A.R.T Cron is installed to run in 5AM every day as the $ALF_USER user"
-
 fi
 
 # Finally, set the permissions
@@ -802,8 +744,11 @@ echo "3. Update database and other settings in alfresco-global.properties"
 echo "   You will find this file in $CATALINA_HOME/shared/classes"
 echored "   Really, do this. There are some settings there that you need to verify."
 echo
-echo "4. Update properties for BART (if installed) in $ALF_HOME/scripts/bart/alfresco-bart.properties"
-echo "   DBNAME,DBUSER,DBPASS,DBHOST,REC_MYDBNAME,REC_MYUSER,REC_MYPASS,REC_MYHOST,DBTYPE "
+echo "4. Change Solr from https to none for alfresco and archive"
+echo "   $ALF_HOME/alf_data/solr6/solrhome/alfresco/conf/solrcore.properties "
+echo "   alfresco.secureComms change from https to none"
+echo "   $ALF_HOMEalf_data/solr6/solrhome/archive/conf/solrcore.properties "
+echo "   alfresco.secureComms change from https to none"
 echo
 echo "5. Update cpu settings in $ALF_HOME/scripts/limitconvert.sh if you have more than 2 cores."
 echo

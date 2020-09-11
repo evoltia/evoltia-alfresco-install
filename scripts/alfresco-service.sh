@@ -9,6 +9,7 @@
 export LC_ALL=@@LOCALESUPPORT@@
 #export JAVA_HOME=/usr/lib/jvm/java-8-oracle/jre
 #export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+export JAVA_HOME="/usr/lib/jvm/java-11-openjdk"
 export ALF_HOME=/opt/alfresco
 export CATALINA_HOME=/opt/alfresco/tomcat
 export CATALINA_TMPDIR=/opt/alfresco/tomcat/temp
@@ -24,7 +25,7 @@ JAVA_OPTS="-Xms1G -Xmx2G -Xss1024k"
 
 JAVA_OPTS="${JAVA_OPTS} -XX:+UseG1GC -XX:+UseStringDeduplication"
 
-JAVA_OPTS="${JAVA_OPTS} -Duser.country=ES -Duser.region=ES -Duser.language=es -Duser.timezone=\"Europe/Madrid\" -d64"
+JAVA_OPTS="${JAVA_OPTS} -Duser.country=ES -Duser.region=ES -Duser.language=es -Duser.timezone=\"Europe/Madrid\" "
 # Enable this if you encounter problems with transformations of certain pdfs. Side effect is disable of remote debugging
 # JAVA_OPTS="${JAVA_OPTS}  -Djava.awt.headless=true"
 
